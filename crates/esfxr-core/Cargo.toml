@@ -1,0 +1,13 @@
+[package]
+name = "esfxr-core"
+version = "0.0.0"
+authors = ["Denis BOURGE <bourge.denis@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+color-eyre = "0.6.2"
+cpal = "0.15.0"
+ctrlc = "3.2.5"
+hound = "3.5.0"
+rand = "0.8.5"
+tracing = "0.1.37"
