@@ -43,27 +43,6 @@ pub struct DirectOutput {
     pub config: cpal::SupportedStreamConfig,
 }
 
-fn stream_loop(
-    device: cpal::Device,
-    config: cpal::SupportedStreamConfig,
-    sample_fn: impl FnMut() -> Vec<f64> + Send + 'static,
-) -> eyre::Result<()> {
-    let stream = stream_setup_for_device(device, config, sample_fn)?;
-    stream.play()?;
-
-    let running = Arc::new(AtomicBool::new(true));
-    let handler_running = Arc::clone(&running);
-    ctrlc::set_handler(move || {
-        handler_running.store(false, Ordering::SeqCst);
-    })?;
-
-    println!("Waiting for CTRL+C to quit ...");
-    while running.load(Ordering::SeqCst) {}
-    println!("Received CTRL+C, terminating.");
-
-    Ok(())
-}
-
 fn stream_loop_spinlock(
     device: cpal::Device,
     config: cpal::SupportedStreamConfig,
@@ -80,29 +59,29 @@ fn stream_loop_spinlock(
     Ok(())
 }
 
-pub fn process_stream(
-    output: AudioOutput,
-    sample_fn: impl FnMut() -> Vec<f64> + Send + 'static,
-) -> eyre::Result<()> {
-    match output {
-        AudioOutput::Wav(params) => {
-            export::export_to_wav(&params.path, params.spec, params.duration, sample_fn)
-        }
-        AudioOutput::Direct(params) => stream_loop(params.device, params.config, sample_fn),
-    }
-}
-
 pub fn start_stream_thread(
     output: AudioOutput,
     sample_fn: impl FnMut() -> Vec<f64> + Send + 'static,
     running: Arc<AtomicBool>,
 ) -> eyre::Result<JoinHandle<()>> {
-    Ok(std::thread::spawn(|| match output {
+    Ok(std::thread::spawn(|| {
+        start_stream_blocking(output, sample_fn, running).unwrap()
+    }))
+}
+
+pub fn start_stream_blocking(
+    output: AudioOutput,
+    sample_fn: impl FnMut() -> Vec<f64> + Send + 'static,
+    running: Arc<AtomicBool>,
+) -> eyre::Result<()> {
+    match output {
         AudioOutput::Wav(params) => {
             export::export_to_wav(&params.path, params.spec, params.duration, sample_fn).unwrap();
         }
         AudioOutput::Direct(params) => {
-            stream_loop_spinlock(params.device, params.config, sample_fn, running).unwrap()
+            stream_loop_spinlock(params.device, params.config, sample_fn, running).unwrap();
         }
-    }))
+    }
+
+    Ok(())
 }

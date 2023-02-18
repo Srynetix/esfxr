@@ -3,7 +3,7 @@ use std::{
     thread::JoinHandle,
 };
 
-use esfxr_core::{start_stream_thread, AudioOutput};
+use esfxr_core::{start_stream_blocking, start_stream_thread, AudioOutput};
 use esfxr_dsp::fundsp::hacker::*;
 use esfxr_dsp::{fundsp::shared::Shared, hacker::*};
 
@@ -107,4 +107,22 @@ pub fn run_chain_in_thread(
     };
 
     start_stream_thread(output, sample_fn, audio_running)
+}
+
+pub fn run_chain_blocking(
+    parameters: DspParameters,
+    audio_running: Arc<AtomicBool>,
+) -> color_eyre::Result<()> {
+    let output = AudioOutput::new_direct()?;
+    let sample_rate = output.sample_rate();
+
+    let mut chain = build_dsp_chain(parameters);
+    chain.reset(Some(sample_rate as f64));
+
+    let sample_fn = move || {
+        let v = chain.get_stereo();
+        vec![v.0, v.1]
+    };
+
+    start_stream_blocking(output, sample_fn, audio_running)
 }
