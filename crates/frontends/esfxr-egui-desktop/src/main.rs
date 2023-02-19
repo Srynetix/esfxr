@@ -7,8 +7,8 @@ use std::sync::{
 };
 
 use eframe::egui;
-use esfxr_app::App;
-use esfxr_chain::{run_chain_in_thread, DspParameters};
+use esfxr_dsp::{run_chain_in_thread, DspParameters};
+use esfxr_egui_common::App;
 
 fn main() -> Result<(), color_eyre::Report> {
     tracing_subscriber::fmt::init();

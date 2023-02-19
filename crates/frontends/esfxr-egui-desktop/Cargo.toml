@@ -1,5 +1,5 @@
 [package]
-name = "esfxr-app"
+name = "esfxr-egui-desktop"
 version = "0.0.0"
 authors = ["Denis BOURGE <bourge.denis@gmail.com>"]
 edition = "2021"
@@ -8,7 +8,6 @@ edition = "2021"
 eframe = "0.21.3"
 egui = "0.21.0"
 tracing-subscriber = "0.3.16"
-esfxr-core = { path = "../esfxr-core" }
-esfxr-dsp = { path = "../esfxr-dsp" }
-esfxr-chain = { path = "../esfxr-chain" }
+esfxr-egui-common = { path = "../esfxr-egui-common" }
+esfxr-dsp = { path = "../../base/esfxr-dsp" }
 color-eyre = "0.6.2"

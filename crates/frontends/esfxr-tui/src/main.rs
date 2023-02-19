@@ -9,8 +9,7 @@ use cursive::{
     View,
 };
 use cursive::{Cursive, CursiveExt};
-use esfxr_chain::{run_chain_in_thread, DspParameters};
-use esfxr_dsp::fundsp::shared::Shared;
+use esfxr_dsp::{fundsp::shared::Shared, run_chain_in_thread, DspParameters};
 
 const SLIDER_PRECISION: usize = 2 * 10;
 const MAX_PITCH: f64 = 440.0 * 8.0;

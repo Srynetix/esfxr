@@ -1,9 +1,0 @@
-[package]
-name = "esfxr-dsp"
-version = "0.0.0"
-authors = ["Denis BOURGE <bourge.denis@gmail.com>"]
-edition = "2021"
-
-[dependencies]
-esfxr-core = { path = "../esfxr-core" }
-fundsp = "0.12.0"

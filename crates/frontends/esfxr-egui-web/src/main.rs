@@ -1,8 +1,8 @@
 // when compiling to web using trunk.
 #[cfg(target_arch = "wasm32")]
 fn main() -> color_eyre::Result<()> {
-    use esfxr_app::App;
-    use esfxr_chain::{run_chain_blocking, DspParameters};
+    use esfxr_dsp::DspParameters;
+    use esfxr_egui_common::App;
     use std::sync::{
         atomic::{AtomicBool, Ordering},
         Arc,

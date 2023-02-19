@@ -3,9 +3,10 @@ use std::{
     thread::JoinHandle,
 };
 
+use crate::hacker::*;
 use esfxr_core::{start_stream_blocking, start_stream_thread, AudioOutput};
-use esfxr_dsp::fundsp::hacker::*;
-use esfxr_dsp::{fundsp::shared::Shared, hacker::*};
+use fundsp::hacker::*;
+use fundsp::shared::Shared;
 
 #[derive(Clone)]
 pub struct Waveform {

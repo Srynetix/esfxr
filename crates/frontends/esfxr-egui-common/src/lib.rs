@@ -2,8 +2,7 @@ use std::ops::RangeInclusive;
 
 use eframe::egui;
 use egui::Ui;
-use esfxr_chain::DspParameters;
-use esfxr_dsp::fundsp::shared::Shared;
+use esfxr_dsp::{fundsp::shared::Shared, DspParameters};
 
 pub struct App {
     pub parameters: DspParameters,

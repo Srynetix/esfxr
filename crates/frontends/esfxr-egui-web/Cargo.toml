@@ -1,13 +1,13 @@
 [package]
-name = "esfxr-web"
+name = "esfxr-egui-web"
 version = "0.0.0"
 authors = ["Denis BOURGE <bourge.denis@gmail.com>"]
 edition = "2021"
 
 [dependencies]
 eframe = "0.21.3"
-esfxr-app = { path = "../esfxr-app" }
-esfxr-chain = { path = "../esfxr-chain" }
+esfxr-egui-common = { path = "../esfxr-egui-common" }
+esfxr-dsp = { path = "../../base/esfxr-dsp" }
 color-eyre = "0.6.2"
 tracing = "0.1.37"
 

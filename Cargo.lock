@@ -1104,28 +1104,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "esfxr-app"
-version = "0.0.0"
-dependencies = [
- "color-eyre",
- "eframe",
- "egui",
- "esfxr-chain",
- "esfxr-core",
- "esfxr-dsp",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "esfxr-chain"
-version = "0.0.0"
-dependencies = [
- "color-eyre",
- "esfxr-core",
- "esfxr-dsp",
-]
-
-[[package]]
 name = "esfxr-core"
 version = "0.0.0"
 dependencies = [
@@ -1140,8 +1118,48 @@ dependencies = [
 name = "esfxr-dsp"
 version = "0.0.0"
 dependencies = [
+ "color-eyre",
  "esfxr-core",
  "fundsp",
+]
+
+[[package]]
+name = "esfxr-egui-common"
+version = "0.0.0"
+dependencies = [
+ "color-eyre",
+ "eframe",
+ "egui",
+ "esfxr-core",
+ "esfxr-dsp",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "esfxr-egui-desktop"
+version = "0.0.0"
+dependencies = [
+ "color-eyre",
+ "eframe",
+ "egui",
+ "esfxr-dsp",
+ "esfxr-egui-common",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "esfxr-egui-web"
+version = "0.0.0"
+dependencies = [
+ "color-eyre",
+ "console_error_panic_hook",
+ "eframe",
+ "esfxr-dsp",
+ "esfxr-egui-common",
+ "tracing",
+ "tracing-subscriber",
+ "tracing-wasm",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]
@@ -1150,24 +1168,8 @@ version = "0.0.0"
 dependencies = [
  "color-eyre",
  "cursive",
- "esfxr-chain",
  "esfxr-core",
  "esfxr-dsp",
-]
-
-[[package]]
-name = "esfxr-web"
-version = "0.0.0"
-dependencies = [
- "color-eyre",
- "console_error_panic_hook",
- "eframe",
- "esfxr-app",
- "esfxr-chain",
- "tracing",
- "tracing-subscriber",
- "tracing-wasm",
- "wasm-bindgen-futures",
 ]
 
 [[package]]

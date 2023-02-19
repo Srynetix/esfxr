@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "crates/*"
+    "crates/base/*",
+    "crates/frontends/*",
 ]
 
 [profile.release]
