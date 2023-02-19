@@ -5,7 +5,6 @@ authors = ["Denis BOURGE <bourge.denis@gmail.com>"]
 edition = "2021"
 
 [dependencies]
-esfxr-core = { path = "../../base/esfxr-core" }
 esfxr-dsp = { path = "../../base/esfxr-dsp" }
 cursive = { version = "0.20.0", features = ["crossterm-backend"], default-features = false }
 color-eyre = "0.6.2"

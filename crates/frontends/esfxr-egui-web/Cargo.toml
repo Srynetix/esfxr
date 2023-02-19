@@ -7,7 +7,6 @@ edition = "2021"
 [dependencies]
 eframe = "0.21.3"
 esfxr-egui-common = { path = "../esfxr-egui-common" }
-esfxr-dsp = { path = "../../base/esfxr-dsp" }
 color-eyre = "0.6.2"
 tracing = "0.1.37"
 

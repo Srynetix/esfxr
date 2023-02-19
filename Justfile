@@ -1,3 +1,5 @@
+index_html_path := "./crates/frontends/esfxr-egui-web/index.html"
+
 _default:
     just --list
 
@@ -11,11 +13,11 @@ run-tui:
 
 # Run the Web app
 run-web:
-    trunk serve ./crates/frontends/esfxr-egui-web/index.html
+    trunk serve {{ index_html_path }}
 
 # Build the web app
 build-web:
-    trunk build ./crates/frontends/esfxr-egui-web/index.html
+    trunk build {{ index_html_path }}
 
 # Build all (minus the web app)
 build:

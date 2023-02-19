@@ -1,10 +1,5 @@
-use std::{
-    sync::{atomic::AtomicBool, Arc},
-    thread::JoinHandle,
-};
-
 use crate::hacker::*;
-use esfxr_core::{start_stream_blocking, start_stream_thread, AudioOutput};
+use esfxr_audio_driver::{cpal::Stream, AudioOutput};
 use fundsp::hacker::*;
 use fundsp::shared::Shared;
 
@@ -67,63 +62,46 @@ impl Default for Adsr {
     }
 }
 
-#[allow(clippy::precedence)]
-pub fn build_dsp_chain(parameters: DspParameters) -> Box<dyn AudioUnit64> {
-    let waveform_params = parameters.waveform;
-    let sine_op = var(&waveform_params.sine_amount) * sine();
-    let noise_op = var(&waveform_params.noise_amount) * noise();
-    let saw_op = var(&waveform_params.saw_amount) * saw();
-    let square_op = var(&waveform_params.square_amount) * square();
-    let waveform = square_op & saw_op & (sine_op + noise_op);
+pub struct DspChain;
 
-    let c = (var(&parameters.pitch)
-        >> waveform
-            * (var(&parameters.control)
-                >> adsr_v(
-                    parameters.adsr.attack,
-                    parameters.adsr.decay,
-                    parameters.adsr.sustain,
-                    parameters.adsr.release,
-                )))
-        * var(&parameters.volume);
+impl DspChain {
+    #[allow(clippy::precedence)]
+    fn build_dsp_unit(parameters: DspParameters) -> Box<dyn AudioUnit64> {
+        let waveform_params = parameters.waveform;
+        let sine_op = var(&waveform_params.sine_amount) * sine();
+        let noise_op = var(&waveform_params.noise_amount) * noise();
+        let saw_op = var(&waveform_params.saw_amount) * saw();
+        let square_op = var(&waveform_params.square_amount) * square();
+        let waveform = square_op & saw_op & (sine_op + noise_op);
 
-    let c = c >> declick() >> dcblock();
+        let c = (var(&parameters.pitch)
+            >> waveform
+                * (var(&parameters.control)
+                    >> adsr_v(
+                        parameters.adsr.attack,
+                        parameters.adsr.decay,
+                        parameters.adsr.sustain,
+                        parameters.adsr.release,
+                    )))
+            * var(&parameters.volume);
 
-    Box::new(c)
-}
+        let c = c >> declick() >> dcblock();
 
-pub fn run_chain_in_thread(
-    parameters: DspParameters,
-    audio_running: Arc<AtomicBool>,
-) -> color_eyre::Result<JoinHandle<()>> {
-    let output = AudioOutput::new_direct()?;
-    let sample_rate = output.sample_rate();
+        Box::new(c)
+    }
 
-    let mut chain = build_dsp_chain(parameters);
-    chain.reset(Some(sample_rate as f64));
+    pub fn build_stream(parameters: DspParameters) -> color_eyre::Result<Stream> {
+        let output = AudioOutput::new()?;
+        let sample_rate = output.sample_rate();
 
-    let sample_fn = move || {
-        let v = chain.get_stereo();
-        vec![v.0, v.1]
-    };
+        let mut chain = Self::build_dsp_unit(parameters);
+        chain.reset(Some(sample_rate as f64));
 
-    start_stream_thread(output, sample_fn, audio_running)
-}
+        let sample_fn = move || {
+            let v = chain.get_stereo();
+            vec![v.0, v.1]
+        };
 
-pub fn run_chain_blocking(
-    parameters: DspParameters,
-    audio_running: Arc<AtomicBool>,
-) -> color_eyre::Result<()> {
-    let output = AudioOutput::new_direct()?;
-    let sample_rate = output.sample_rate();
-
-    let mut chain = build_dsp_chain(parameters);
-    chain.reset(Some(sample_rate as f64));
-
-    let sample_fn = move || {
-        let v = chain.get_stereo();
-        vec![v.0, v.1]
-    };
-
-    start_stream_blocking(output, sample_fn, audio_running)
+        output.build_stream(sample_fn)
+    }
 }

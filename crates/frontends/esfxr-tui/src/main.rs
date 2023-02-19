@@ -9,7 +9,7 @@ use cursive::{
     View,
 };
 use cursive::{Cursive, CursiveExt};
-use esfxr_dsp::{fundsp::shared::Shared, run_chain_in_thread, DspParameters};
+use esfxr_dsp::{fundsp::shared::Shared, DspChain, DspParameters};
 
 const SLIDER_PRECISION: usize = 2 * 10;
 const MAX_PITCH: f64 = 440.0 * 8.0;
@@ -44,12 +44,12 @@ fn draw_pitch_slider(name: &str, value: &Shared<f64>) -> impl View {
 fn main() -> color_eyre::Result<()> {
     let mut siv = Cursive::new();
 
-    let audio_running = Arc::new(AtomicBool::new(true));
     let parameters = DspParameters::default();
-    let audio_thread = run_chain_in_thread(parameters.clone(), audio_running.clone())?;
+    let _stream = DspChain::build_stream(parameters.clone())?;
 
+    let reset_running = Arc::new(AtomicBool::new(true));
     let reset_thread = {
-        let audio_running = audio_running.clone();
+        let audio_running = reset_running.clone();
         let control = parameters.control.clone();
         std::thread::spawn(move || {
             let mut last_time = std::time::Instant::now();
@@ -114,9 +114,8 @@ fn main() -> color_eyre::Result<()> {
 
     siv.run();
 
-    audio_running.store(false, Ordering::Relaxed);
+    reset_running.store(false, Ordering::Relaxed);
     reset_thread.join().unwrap();
-    audio_thread.join().unwrap();
 
     Ok(())
 }

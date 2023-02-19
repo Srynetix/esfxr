@@ -2,13 +2,38 @@ use std::ops::RangeInclusive;
 
 use eframe::egui;
 use egui::Ui;
-use esfxr_dsp::{fundsp::shared::Shared, DspParameters};
+use esfxr_dsp::{cpal, fundsp::shared::Shared, DspChain, DspParameters};
 
+#[derive(Default)]
 pub struct App {
     pub parameters: DspParameters,
+    pub stream: Option<cpal::Stream>,
 }
 
 impl App {
+    pub fn new() -> Self {
+        Default::default()
+    }
+
+    pub fn new_with_stream() -> Self {
+        let parameters = DspParameters::default();
+        let stream =
+            DspChain::build_stream(parameters.clone()).expect("could not build audio stream");
+
+        Self {
+            parameters,
+            stream: Some(stream),
+        }
+    }
+
+    pub fn ensure_stream_ready(&mut self) {
+        if self.stream.is_none() {
+            let stream = DspChain::build_stream(self.parameters.clone())
+                .expect("could not build audio stream");
+            self.stream = Some(stream);
+        }
+    }
+
     fn build_slider(
         &self,
         ui: &mut Ui,
@@ -70,9 +95,10 @@ impl App {
         );
     }
 
-    fn draw_play_button(&self, ui: &mut Ui) {
+    fn draw_play_button(&mut self, ui: &mut Ui) {
         let button = egui::Button::new("Play");
         if ui.add(button).is_pointer_button_down_on() {
+            self.ensure_stream_ready();
             self.parameters.control.set_value(1.0);
         } else {
             self.parameters.control.set_value(-1.0);

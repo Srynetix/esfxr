@@ -1104,13 +1104,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "esfxr-core"
+name = "esfxr-audio-driver"
 version = "0.0.0"
 dependencies = [
  "color-eyre",
  "cpal",
- "futures",
- "hound",
  "tracing",
 ]
 
@@ -1119,7 +1117,7 @@ name = "esfxr-dsp"
 version = "0.0.0"
 dependencies = [
  "color-eyre",
- "esfxr-core",
+ "esfxr-audio-driver",
  "fundsp",
 ]
 
@@ -1130,7 +1128,6 @@ dependencies = [
  "color-eyre",
  "eframe",
  "egui",
- "esfxr-core",
  "esfxr-dsp",
  "tracing-subscriber",
 ]
@@ -1141,8 +1138,6 @@ version = "0.0.0"
 dependencies = [
  "color-eyre",
  "eframe",
- "egui",
- "esfxr-dsp",
  "esfxr-egui-common",
  "tracing-subscriber",
 ]
@@ -1154,7 +1149,6 @@ dependencies = [
  "color-eyre",
  "console_error_panic_hook",
  "eframe",
- "esfxr-dsp",
  "esfxr-egui-common",
  "tracing",
  "tracing-subscriber",
@@ -1168,7 +1162,6 @@ version = "0.0.0"
 dependencies = [
  "color-eyre",
  "cursive",
- "esfxr-core",
  "esfxr-dsp",
 ]
 
@@ -1268,46 +1261,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "futures"
-version = "0.3.26"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13e2792b0ff0340399d58445b88fd9770e3489eff258a4cbc1523418f12abf84"
-dependencies = [
- "futures-channel",
- "futures-core",
- "futures-executor",
- "futures-io",
- "futures-sink",
- "futures-task",
- "futures-util",
-]
-
-[[package]]
-name = "futures-channel"
-version = "0.3.26"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e5317663a9089767a1ec00a487df42e0ca174b61b4483213ac24448e4664df5"
-dependencies = [
- "futures-core",
- "futures-sink",
-]
-
-[[package]]
 name = "futures-core"
 version = "0.3.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec90ff4d0fe1f57d600049061dc6bb68ed03c7d2fbd697274c41805dcb3f8608"
-
-[[package]]
-name = "futures-executor"
-version = "0.3.26"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8de0a35a6ab97ec8869e32a2473f4b1324459e14c29275d14b10cb1fd19b50e"
-dependencies = [
- "futures-core",
- "futures-task",
- "futures-util",
-]
 
 [[package]]
 name = "futures-io"
@@ -1331,17 +1288,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "futures-macro"
-version = "0.3.26"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95a73af87da33b5acf53acfebdc339fe592ecf5357ac7c0a7734ab9d8c876a70"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "futures-sink"
 version = "0.3.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1359,13 +1305,9 @@ version = "0.3.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c1d6de3acfef38d2be4b1f543f553131788603495be83da675e180c8d6b7bd1"
 dependencies = [
- "futures-channel",
  "futures-core",
- "futures-io",
- "futures-macro",
  "futures-sink",
  "futures-task",
- "memchr",
  "pin-project-lite",
  "pin-utils",
  "slab",
@@ -1524,12 +1466,6 @@ name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
-
-[[package]]
-name = "hound"
-version = "3.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d13cdbd5dbb29f9c88095bbdc2590c9cba0d0a1269b983fef6b2cdd7e9f4db1"
 
 [[package]]
 name = "ident_case"
