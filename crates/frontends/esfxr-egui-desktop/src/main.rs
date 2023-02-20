@@ -8,7 +8,7 @@ fn main() -> Result<(), color_eyre::Report> {
     tracing_subscriber::fmt::init();
 
     let options = eframe::NativeOptions {
-        initial_window_size: Some(egui::vec2(320.0, 320.0)),
+        initial_window_size: Some(egui::vec2(320.0, 640.0)),
         resizable: false,
         ..Default::default()
     };

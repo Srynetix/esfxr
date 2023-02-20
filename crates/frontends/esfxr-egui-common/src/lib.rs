@@ -12,7 +12,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        Default::default()
+        Self::default()
     }
 
     pub fn new_with_stream() -> Self {
@@ -69,6 +69,35 @@ impl App {
         self.build_logarithmic_slider(ui, &self.parameters.pitch, "Pitch", 110.0..=440.0 * 8.0);
     }
 
+    #[allow(dead_code)]
+    fn draw_time_controls(&self, ui: &mut Ui) {
+        ui.heading("time");
+        self.build_slider(
+            ui,
+            &self.parameters.time.attack_time,
+            "Attack time (s)",
+            0.0..=2.268,
+        );
+        self.build_slider(
+            ui,
+            &self.parameters.time.sustain_time,
+            "Sustain time (s)",
+            0.0..=2.268,
+        );
+        self.build_slider(
+            ui,
+            &self.parameters.time.sustain_punch,
+            "Sustain punch (%)",
+            0.0..=100.0,
+        );
+        self.build_slider(
+            ui,
+            &self.parameters.time.decay_time,
+            "Decay time (s)",
+            0.0..=2.268,
+        );
+    }
+
     fn draw_adsr_envelope(&self, ui: &mut Ui) {
         ui.heading("envelope");
         self.build_slider(ui, &self.parameters.adsr.attack, "Attack", 0.0..=1.0);
@@ -112,6 +141,7 @@ impl eframe::App for App {
             ui.heading("esfxr");
 
             self.draw_volume_controls(ui);
+            // self.draw_time_controls(ui);
             self.draw_waveform_controls(ui);
             self.draw_adsr_envelope(ui);
 

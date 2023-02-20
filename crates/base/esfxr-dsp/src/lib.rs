@@ -1,8 +1,10 @@
 pub mod adsr;
-pub mod chain;
+mod chain;
 pub mod hacker;
+mod parameters;
 
 pub use esfxr_audio_driver::cpal;
 pub use fundsp;
 
-pub use chain::{DspChain, DspParameters};
+pub use chain::DspChain;
+pub use parameters::DspParameters;

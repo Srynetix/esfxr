@@ -1,66 +1,7 @@
-use crate::hacker::*;
+use crate::hacker::adsr_v;
+use crate::parameters::DspParameters;
 use esfxr_audio_driver::{cpal::Stream, AudioOutput};
 use fundsp::hacker::*;
-use fundsp::shared::Shared;
-
-#[derive(Clone)]
-pub struct Waveform {
-    pub sine_amount: Shared<f64>,
-    pub square_amount: Shared<f64>,
-    pub saw_amount: Shared<f64>,
-    pub noise_amount: Shared<f64>,
-}
-
-impl Default for Waveform {
-    fn default() -> Self {
-        Self {
-            sine_amount: Shared::new(1.0),
-            square_amount: Shared::new(1.0),
-            saw_amount: Shared::new(1.0),
-            noise_amount: Shared::new(1.0),
-        }
-    }
-}
-
-#[derive(Clone)]
-pub struct DspParameters {
-    pub pitch: Shared<f64>,
-    pub volume: Shared<f64>,
-    pub control: Shared<f64>,
-    pub waveform: Waveform,
-    pub adsr: Adsr,
-}
-
-impl Default for DspParameters {
-    fn default() -> Self {
-        Self {
-            pitch: Shared::new(440.0),
-            volume: Shared::new(1.0),
-            control: Shared::new(-1.0),
-            waveform: Waveform::default(),
-            adsr: Adsr::default(),
-        }
-    }
-}
-
-#[derive(Clone)]
-pub struct Adsr {
-    pub attack: Shared<f64>,
-    pub decay: Shared<f64>,
-    pub sustain: Shared<f64>,
-    pub release: Shared<f64>,
-}
-
-impl Default for Adsr {
-    fn default() -> Self {
-        Self {
-            attack: Shared::new(0.0),
-            decay: Shared::new(0.0),
-            sustain: Shared::new(1.0),
-            release: Shared::new(0.0),
-        }
-    }
-}
 
 pub struct DspChain;
 
