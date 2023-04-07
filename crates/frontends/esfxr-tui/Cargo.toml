@@ -8,3 +8,6 @@ edition = "2021"
 esfxr-dsp = { path = "../../base/esfxr-dsp" }
 cursive = { version = "0.20.0", features = ["crossterm-backend"], default-features = false }
 color-eyre = "0.6.2"
+
+[dev-dependencies]
+approx = "0.5.1"

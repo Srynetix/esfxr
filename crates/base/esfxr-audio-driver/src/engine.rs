@@ -12,14 +12,14 @@ pub struct SampleRequestOptions {
 }
 
 pub(crate) fn stream_setup_for_device(
-    device: cpal::Device,
-    config: cpal::SupportedStreamConfig,
-    on_sample: impl FnMut() -> Vec<f64> + Send + 'static,
+    device: &cpal::Device,
+    config: &cpal::SupportedStreamConfig,
+    on_sample: impl FnMut() -> (f64, f64) + Send + 'static,
 ) -> eyre::Result<cpal::Stream> {
     match config.sample_format() {
-        cpal::SampleFormat::F32 => stream_make::<f32>(&device, &config.into(), on_sample),
-        cpal::SampleFormat::I16 => stream_make::<i16>(&device, &config.into(), on_sample),
-        cpal::SampleFormat::U16 => stream_make::<u16>(&device, &config.into(), on_sample),
+        cpal::SampleFormat::F32 => stream_make::<f32>(device, config, on_sample),
+        cpal::SampleFormat::I16 => stream_make::<i16>(device, config, on_sample),
+        cpal::SampleFormat::U16 => stream_make::<u16>(device, config, on_sample),
         f => panic!("Unsupported sample format: {f}"),
     }
 }
@@ -46,15 +46,15 @@ pub(crate) fn host_device_setup(
 
 fn stream_make<T>(
     device: &cpal::Device,
-    config: &cpal::StreamConfig,
-    mut on_sample: impl FnMut() -> Vec<f64> + Send + 'static,
+    config: &cpal::SupportedStreamConfig,
+    mut on_sample: impl FnMut() -> (f64, f64) + Send + 'static,
 ) -> eyre::Result<cpal::Stream>
 where
     T: SizedSample + FromSample<f64>,
 {
-    let sample_rate = config.sample_rate.0 as f32;
+    let sample_rate = config.sample_rate().0 as f32;
     let sample_clock = 0f32;
-    let nchannels = config.channels as usize;
+    let nchannels = config.channels() as usize;
     let mut request = SampleRequestOptions {
         sample_rate,
         sample_clock,
@@ -68,7 +68,7 @@ where
     };
 
     let stream = device.build_output_stream(
-        config,
+        &config.to_owned().into(),
         move |output: &mut [T], _: &cpal::OutputCallbackInfo| {
             on_window(output, &mut request, &mut on_sample)
         },
@@ -82,14 +82,19 @@ where
 fn on_window<T>(
     output: &mut [T],
     request: &mut SampleRequestOptions,
-    mut on_sample: impl FnMut() -> Vec<f64>,
+    mut on_sample: impl FnMut() -> (f64, f64),
 ) where
     T: SizedSample + FromSample<f64>,
 {
     for frame in output.chunks_mut(request.nchannels) {
         let samples = on_sample();
         for (channel, sample) in frame.iter_mut().enumerate() {
-            let value = T::from_sample(samples[channel]);
+            let sample_choice = if channel % 2 == 0 {
+                samples.0
+            } else {
+                samples.1
+            };
+            let value = T::from_sample(sample_choice);
             *sample = value;
         }
     }
