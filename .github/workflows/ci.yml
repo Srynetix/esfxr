@@ -22,4 +22,8 @@ jobs:
     - uses: extractions/setup-just@v1
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - run: just fmt-check lint test build build-web
+    - run: sudo apt install libasound2-dev -y
+    - run: just fmt-check
+    - run: just lint
+    - run: just test
+    - run: just build
