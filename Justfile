@@ -38,3 +38,7 @@ lint:
 # Test
 test:
     cargo test --all
+
+# CI
+ci:
+    just fmt-check && just lint && just test && cargo build
