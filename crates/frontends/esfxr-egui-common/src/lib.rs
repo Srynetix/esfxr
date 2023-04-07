@@ -7,6 +7,7 @@ use esfxr_dsp::{cpal, fundsp::shared::Shared, DspChain, DspParameters};
 #[derive(Default)]
 pub struct App {
     pub parameters: DspParameters,
+    pub chain: Option<DspChain>,
     pub stream: Option<cpal::Stream>,
 }
 
@@ -17,21 +18,30 @@ impl App {
 
     pub fn new_with_stream() -> Self {
         let parameters = DspParameters::default();
-        let stream =
-            DspChain::build_stream(parameters.clone()).expect("could not build audio stream");
+        let chain = DspChain::new().expect("could not build dsp chain");
+        let stream = chain
+            .build_stream(parameters.clone())
+            .expect("could not build audio stream");
 
         Self {
             parameters,
+            chain: Some(chain),
             stream: Some(stream),
         }
     }
 
     pub fn ensure_stream_ready(&mut self) {
-        if self.stream.is_none() {
-            let stream = DspChain::build_stream(self.parameters.clone())
-                .expect("could not build audio stream");
-            self.stream = Some(stream);
+        if self.chain.is_none() {
+            self.chain = Some(DspChain::new().expect("could not build dsp chain"));
         }
+
+        let stream = self
+            .chain
+            .as_ref()
+            .expect("chain should be initialized")
+            .build_stream(self.parameters.clone())
+            .expect("could not build audio stream");
+        self.stream = Some(stream);
     }
 
     fn build_slider(
@@ -66,7 +76,7 @@ impl App {
 
     fn draw_volume_controls(&self, ui: &mut Ui) {
         self.build_slider(ui, &self.parameters.volume, "Volume", 0.0..=1.0);
-        self.build_logarithmic_slider(ui, &self.parameters.pitch, "Pitch", 110.0..=440.0 * 8.0);
+        self.build_logarithmic_slider(ui, &self.parameters.pitch, "Pitch", 20.0..=20000.0);
     }
 
     #[allow(dead_code)]
@@ -74,36 +84,28 @@ impl App {
         ui.heading("time");
         self.build_slider(
             ui,
-            &self.parameters.time.attack_time,
+            &self.parameters.envelope.attack_time,
             "Attack time (s)",
             0.0..=2.268,
         );
         self.build_slider(
             ui,
-            &self.parameters.time.sustain_time,
+            &self.parameters.envelope.sustain_time,
             "Sustain time (s)",
             0.0..=2.268,
         );
         self.build_slider(
             ui,
-            &self.parameters.time.sustain_punch,
+            &self.parameters.envelope.sustain_punch,
             "Sustain punch (%)",
             0.0..=100.0,
         );
         self.build_slider(
             ui,
-            &self.parameters.time.decay_time,
+            &self.parameters.envelope.decay_time,
             "Decay time (s)",
             0.0..=2.268,
         );
-    }
-
-    fn draw_adsr_envelope(&self, ui: &mut Ui) {
-        ui.heading("envelope");
-        self.build_slider(ui, &self.parameters.adsr.attack, "Attack", 0.0..=1.0);
-        self.build_slider(ui, &self.parameters.adsr.decay, "Decay", 0.0..=1.0);
-        self.build_slider(ui, &self.parameters.adsr.sustain, "Sustain", 0.0..=1.0);
-        self.build_slider(ui, &self.parameters.adsr.release, "Release", 0.0..=2.0);
     }
 
     fn draw_waveform_controls(&self, ui: &mut Ui) {
@@ -126,11 +128,10 @@ impl App {
 
     fn draw_play_button(&mut self, ui: &mut Ui) {
         let button = egui::Button::new("Play");
-        if ui.add(button).is_pointer_button_down_on() {
+        if ui.add(button).clicked() {
             self.ensure_stream_ready();
-            self.parameters.control.set_value(1.0);
-        } else {
             self.parameters.control.set_value(-1.0);
+            self.parameters.control.set_value(1.0);
         }
     }
 }
@@ -141,9 +142,8 @@ impl eframe::App for App {
             ui.heading("esfxr");
 
             self.draw_volume_controls(ui);
-            // self.draw_time_controls(ui);
+            self.draw_time_controls(ui);
             self.draw_waveform_controls(ui);
-            self.draw_adsr_envelope(ui);
 
             self.draw_play_button(ui);
         });

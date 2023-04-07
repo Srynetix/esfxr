@@ -5,23 +5,23 @@ _default:
 
 # Run the desktop app
 run-desktop:
-    cargo run --bin esfxr-egui-desktop
+    cargo run --release --bin esfxr-egui-desktop
 
 # Run the TUI app
 run-tui:
-    cargo run --bin esfxr-tui
+    cargo run --release --bin esfxr-tui
 
 # Run the Web app
 run-web:
-    trunk serve {{ index_html_path }}
+    trunk serve --release {{ index_html_path }}
 
 # Build the web app
 build-web:
-    trunk build {{ index_html_path }}
+    trunk build --release {{ index_html_path }}
 
 # Build all (minus the web app)
 build:
-    cargo build
+    cargo build --release
 
 # Format all
 fmt:
@@ -30,3 +30,7 @@ fmt:
 # Lint all
 lint:
     cargo clippy --all --tests
+
+# Test
+test:
+    cargo test --all

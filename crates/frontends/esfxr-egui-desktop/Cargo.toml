@@ -6,6 +6,6 @@ edition = "2021"
 
 [dependencies]
 eframe = "0.21.3"
-tracing-subscriber = "0.3.16"
+tracing-subscriber = { version = "0.3.16", features = ["env-filter", "tracing-log"] }
 esfxr-egui-common = { path = "../esfxr-egui-common" }
 color-eyre = "0.6.2"

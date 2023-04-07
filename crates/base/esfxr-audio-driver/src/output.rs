@@ -19,10 +19,10 @@ impl AudioOutput {
     }
 
     pub fn build_stream(
-        self,
-        sample_fn: impl FnMut() -> Vec<f64> + Send + 'static,
+        &self,
+        sample_fn: impl FnMut() -> (f64, f64) + Send + 'static,
     ) -> eyre::Result<Stream> {
-        let stream = stream_setup_for_device(self.device, self.config, sample_fn)?;
+        let stream = stream_setup_for_device(&self.device, &self.config, sample_fn)?;
         stream.play()?;
 
         Ok(stream)

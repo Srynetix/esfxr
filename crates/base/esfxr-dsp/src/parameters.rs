@@ -31,32 +31,19 @@ pub struct TimeEnvelope {
     pub decay_time: Shared<f64>,
 }
 
+impl TimeEnvelope {
+    pub fn total_duration(&self) -> f64 {
+        self.attack_time.value() + self.sustain_time.value() + self.decay_time.value()
+    }
+}
+
 impl Default for TimeEnvelope {
     fn default() -> Self {
         Self {
             attack_time: Shared::new(0.0),
-            sustain_time: Shared::new(0.0),
-            sustain_punch: Shared::new(0.1),
+            sustain_time: Shared::new(0.1),
+            sustain_punch: Shared::new(0.0),
             decay_time: Shared::new(0.0),
-        }
-    }
-}
-
-#[derive(Clone)]
-pub struct AdsrEnvelope {
-    pub attack: Shared<f64>,
-    pub decay: Shared<f64>,
-    pub sustain: Shared<f64>,
-    pub release: Shared<f64>,
-}
-
-impl Default for AdsrEnvelope {
-    fn default() -> Self {
-        Self {
-            attack: Shared::new(0.0),
-            decay: Shared::new(0.0),
-            sustain: Shared::new(1.0),
-            release: Shared::new(0.0),
         }
     }
 }
@@ -66,9 +53,8 @@ pub struct DspParameters {
     pub pitch: Shared<f64>,
     pub volume: Shared<f64>,
     pub control: Shared<f64>,
-    pub time: TimeEnvelope,
+    pub envelope: TimeEnvelope,
     pub waveform: Waveform,
-    pub adsr: AdsrEnvelope,
 }
 
 impl Default for DspParameters {
@@ -78,8 +64,7 @@ impl Default for DspParameters {
             volume: Shared::new(1.0),
             control: Shared::new(-1.0),
             waveform: Waveform::default(),
-            time: TimeEnvelope::default(),
-            adsr: AdsrEnvelope::default(),
+            envelope: TimeEnvelope::default(),
         }
     }
 }
