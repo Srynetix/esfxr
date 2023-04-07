@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Cache toolchain
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rustup/toolchains
+          ~/.rustup/update-hashes
+          ~/.rustup/settings.toml
+        key: toolchain-${{ hashFiles('rust-toolchain.toml') }}
+    - run: rustup show
+      shell: bash
+    - uses: extractions/setup-just@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - run: just fmt-check lint test build build-web

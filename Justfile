@@ -27,6 +27,10 @@ build:
 fmt:
     cargo fmt --all
 
+# Check format
+fmt-check:
+    cargo fmt --check --all
+
 # Lint all
 lint:
     cargo clippy --all --tests
