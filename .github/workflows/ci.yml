@@ -23,7 +23,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
     - run: sudo apt install libasound2-dev -y
-    - run: just fmt-check
-    - run: just lint
-    - run: just test
-    - run: just build
+    - run: just ci
