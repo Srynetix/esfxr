@@ -39,7 +39,7 @@ impl DspChain {
         Box::new(c)
     }
 
-    pub fn build_stream(&mut self, parameters: DspParameters) -> color_eyre::Result<Stream> {
+    pub fn build_stream(&self, parameters: DspParameters) -> color_eyre::Result<Stream> {
         let sample_rate = self.output.sample_rate();
 
         let mut chain = self.build_dsp_unit(parameters);

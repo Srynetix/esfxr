@@ -13,7 +13,7 @@ pub struct App {
     pub parameters: DspParameters,
     pub chain: Option<DspChain>,
     pub stream: Option<cpal::Stream>,
-    vu_meter: PeakMeter,
+    peak_meter: PeakMeter,
 }
 
 impl App {
@@ -32,7 +32,7 @@ impl App {
             parameters,
             chain: Some(chain),
             stream: Some(stream),
-            vu_meter: Default::default(),
+            peak_meter: Default::default(),
         }
     }
 
@@ -43,7 +43,7 @@ impl App {
 
         let stream = self
             .chain
-            .as_mut()
+            .as_ref()
             .expect("chain should be initialized")
             .build_stream(self.parameters.clone())
             .expect("could not build audio stream");
@@ -85,10 +85,10 @@ impl App {
         self.build_logarithmic_slider(ui, &self.parameters.pitch, "Pitch", 20.0..=20000.0);
     }
 
-    fn draw_vu_meter(&mut self, ui: &mut Ui) {
+    fn draw_peak_meter(&mut self, ui: &mut Ui) {
         if let Some(chain) = self.chain.as_ref() {
-            self.vu_meter.update_from_chain(chain);
-            self.vu_meter.draw(ui);
+            self.peak_meter.update_from_chain(chain);
+            self.peak_meter.draw(ui);
         }
     }
 
@@ -142,7 +142,7 @@ impl eframe::App for App {
                     ui.add(EnvelopeWidget::new(self.parameters.clone()));
                 });
 
-                self.draw_vu_meter(ui);
+                self.draw_peak_meter(ui);
             });
 
             self.draw_play_button(ui);
