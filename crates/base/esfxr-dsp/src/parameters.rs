@@ -52,7 +52,6 @@ impl Default for TimeEnvelope {
 pub struct DspParameters {
     pub pitch: Shared<f64>,
     pub volume: Shared<f64>,
-    pub control: Shared<f64>,
     pub envelope: TimeEnvelope,
     pub waveform: Waveform,
 }
@@ -62,7 +61,6 @@ impl Default for DspParameters {
         Self {
             pitch: Shared::new(220.0),
             volume: Shared::new(1.0),
-            control: Shared::new(-1.0),
             waveform: Waveform::default(),
             envelope: TimeEnvelope::default(),
         }

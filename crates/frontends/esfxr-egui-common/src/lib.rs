@@ -1,14 +1,19 @@
+mod color;
+mod widgets;
+
 use std::ops::RangeInclusive;
 
 use eframe::egui;
 use egui::Ui;
 use esfxr_dsp::{cpal, fundsp::shared::Shared, DspChain, DspParameters};
+use widgets::{EnvelopeWidget, PeakMeter, WaveformWidget};
 
 #[derive(Default)]
 pub struct App {
     pub parameters: DspParameters,
     pub chain: Option<DspChain>,
     pub stream: Option<cpal::Stream>,
+    vu_meter: PeakMeter,
 }
 
 impl App {
@@ -16,17 +21,18 @@ impl App {
         Self::default()
     }
 
-    pub fn new_with_stream() -> Self {
+    pub fn new_with_empty_stream() -> Self {
         let parameters = DspParameters::default();
         let chain = DspChain::new().expect("could not build dsp chain");
         let stream = chain
-            .build_stream(parameters.clone())
+            .build_empty_stream()
             .expect("could not build audio stream");
 
         Self {
             parameters,
             chain: Some(chain),
             stream: Some(stream),
+            vu_meter: Default::default(),
         }
     }
 
@@ -37,7 +43,7 @@ impl App {
 
         let stream = self
             .chain
-            .as_ref()
+            .as_mut()
             .expect("chain should be initialized")
             .build_stream(self.parameters.clone())
             .expect("could not build audio stream");
@@ -79,6 +85,13 @@ impl App {
         self.build_logarithmic_slider(ui, &self.parameters.pitch, "Pitch", 20.0..=20000.0);
     }
 
+    fn draw_vu_meter(&mut self, ui: &mut Ui) {
+        if let Some(chain) = self.chain.as_ref() {
+            self.vu_meter.update_from_chain(chain);
+            self.vu_meter.draw(ui);
+        }
+    }
+
     #[allow(dead_code)]
     fn draw_time_controls(&self, ui: &mut Ui) {
         ui.heading("time");
@@ -108,30 +121,10 @@ impl App {
         );
     }
 
-    fn draw_waveform_controls(&self, ui: &mut Ui) {
-        ui.heading("waveform");
-        self.build_slider(ui, &self.parameters.waveform.sine_amount, "Sine", 0.0..=1.0);
-        self.build_slider(
-            ui,
-            &self.parameters.waveform.square_amount,
-            "Square",
-            0.0..=1.0,
-        );
-        self.build_slider(ui, &self.parameters.waveform.saw_amount, "Saw", 0.0..=1.0);
-        self.build_slider(
-            ui,
-            &self.parameters.waveform.noise_amount,
-            "Noise",
-            0.0..=1.0,
-        );
-    }
-
     fn draw_play_button(&mut self, ui: &mut Ui) {
         let button = egui::Button::new("Play");
         if ui.add(button).clicked() {
             self.ensure_stream_ready();
-            self.parameters.control.set_value(-1.0);
-            self.parameters.control.set_value(1.0);
         }
     }
 }
@@ -141,11 +134,20 @@ impl eframe::App for App {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("esfxr");
 
-            self.draw_volume_controls(ui);
-            self.draw_time_controls(ui);
-            self.draw_waveform_controls(ui);
+            ui.horizontal_top(|ui| {
+                ui.vertical(|ui| {
+                    self.draw_volume_controls(ui);
+
+                    ui.add(WaveformWidget::new(self.parameters.clone()));
+                    ui.add(EnvelopeWidget::new(self.parameters.clone()));
+                });
+
+                self.draw_vu_meter(ui);
+            });
 
             self.draw_play_button(ui);
         });
+
+        ctx.request_repaint();
     }
 }

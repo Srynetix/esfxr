@@ -110,7 +110,7 @@ fn main() -> color_eyre::Result<()> {
     let mut siv = Cursive::new();
 
     let parameters = DspParameters::default();
-    let chain = DspChain::new()?;
+    let mut chain = DspChain::new()?;
     let mut _stream = chain.build_stream(parameters.clone())?;
 
     {
