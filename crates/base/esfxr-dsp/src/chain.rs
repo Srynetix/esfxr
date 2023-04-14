@@ -13,11 +13,16 @@ impl DspChain {
         Ok(Self { output })
     }
 
+    pub fn output(&self) -> &AudioOutput {
+        &self.output
+    }
+
     #[allow(clippy::precedence)]
     fn build_dsp_unit(&self, parameters: DspParameters) -> Box<dyn AudioUnit64> {
         let waveform_params = parameters.waveform;
         let sine_op = var(&waveform_params.sine_amount) * sine();
-        let noise_op = var(&waveform_params.noise_amount) * noise();
+        let noise_op = var(&waveform_params.noise_amount)
+            * ((noise() | var(&parameters.pitch) * 8.0) >> hold(1.0));
         let saw_op = var(&waveform_params.saw_amount) * saw();
         let square_op = var(&waveform_params.square_amount) * square();
         let waveform = (var(&parameters.pitch) >> (square_op & saw_op & sine_op)) & noise_op;
@@ -29,10 +34,7 @@ impl DspChain {
                 parameters.envelope.sustain_punch,
                 parameters.envelope.decay_time,
             )
-            * var(&parameters.volume)
-            >> clip();
-
-        // let c = c >> declick();
+            >> clip() * var(&parameters.volume);
 
         Box::new(c)
     }
@@ -45,6 +47,11 @@ impl DspChain {
 
         let sample_fn = move || chain.get_stereo();
 
+        self.output.build_stream(sample_fn)
+    }
+
+    pub fn build_empty_stream(&self) -> color_eyre::Result<Stream> {
+        let sample_fn = move || (0.0, 0.0);
         self.output.build_stream(sample_fn)
     }
 }

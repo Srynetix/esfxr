@@ -23,7 +23,7 @@ fn main() -> Result<(), color_eyre::Report> {
     eframe::run_native(
         "esfxr",
         options,
-        Box::new(|_cc| Box::new(App::new_with_stream())),
+        Box::new(|_cc| Box::new(App::new_with_empty_stream())),
     )
     .unwrap();
 

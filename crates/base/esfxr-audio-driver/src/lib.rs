@@ -1,3 +1,4 @@
+mod buffer;
 mod engine;
 mod output;
 

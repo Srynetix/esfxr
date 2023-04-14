@@ -7,5 +7,5 @@ edition = "2021"
 [dependencies]
 color-eyre = "0.6.2"
 esfxr-audio-driver = { path = "../esfxr-audio-driver" }
-fundsp = "0.13.0"
+fundsp = { git = "https://github.com/SamiPerttu/fundsp", rev = "fe8ba0a97000bf652ec5f575ac454793a762906e" }
 tracing = "0.1.37"
