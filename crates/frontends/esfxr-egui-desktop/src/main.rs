@@ -15,7 +15,7 @@ fn main() -> Result<(), color_eyre::Report> {
         .init();
 
     let options = eframe::NativeOptions {
-        initial_window_size: Some(egui::vec2(320.0, 640.0)),
+        initial_window_size: Some(egui::vec2(640.0, 640.0)),
         resizable: true,
         ..Default::default()
     };

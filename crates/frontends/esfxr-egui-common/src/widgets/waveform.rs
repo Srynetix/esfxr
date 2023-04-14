@@ -15,22 +15,24 @@ impl WaveformWidget {
 
 impl Widget for WaveformWidget {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
-        ui.vertical(|ui| {
-            ui.heading("waveform");
-            build_slider(ui, &self.parameters.waveform.sine_amount, "Sine", 0.0..=1.0);
-            build_slider(
-                ui,
-                &self.parameters.waveform.square_amount,
-                "Square",
-                0.0..=1.0,
-            );
-            build_slider(ui, &self.parameters.waveform.saw_amount, "Saw", 0.0..=1.0);
-            build_slider(
-                ui,
-                &self.parameters.waveform.noise_amount,
-                "Noise",
-                0.0..=1.0,
-            );
+        ui.group(|ui| {
+            ui.vertical(|ui| {
+                ui.heading("waveform");
+                build_slider(ui, &self.parameters.waveform.sine_amount, "Sine", 0.0..=1.0);
+                build_slider(
+                    ui,
+                    &self.parameters.waveform.square_amount,
+                    "Square",
+                    0.0..=1.0,
+                );
+                build_slider(ui, &self.parameters.waveform.saw_amount, "Saw", 0.0..=1.0);
+                build_slider(
+                    ui,
+                    &self.parameters.waveform.noise_amount,
+                    "Noise",
+                    0.0..=1.0,
+                );
+            })
         })
         .response
     }
