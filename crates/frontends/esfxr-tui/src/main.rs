@@ -122,13 +122,6 @@ fn main() -> color_eyre::Result<()> {
                 .child(TextView::new("press 'p' to play, 'q' to quit"))
                 .child(DummyView.fixed_height(1))
                 .child(SliderBuilder::default().build("Volume", &parameters.volume))
-                .child(
-                    SliderBuilder::default()
-                        .min_value(MIN_PITCH)
-                        .max_value(MAX_PITCH)
-                        .scale(SliderScale::Logarithmic)
-                        .build("Pitch", &parameters.pitch),
-                )
                 .child(DummyView.fixed_height(1))
                 .child(TextView::new("waveform"))
                 .child(SliderBuilder::default().build("Sine", &parameters.waveform.sine_amount))
@@ -156,6 +149,37 @@ fn main() -> color_eyre::Result<()> {
                     SliderBuilder::default()
                         .max_value(2.268)
                         .build("Decay time", &parameters.envelope.decay_time),
+                )
+                .child(DummyView.fixed_height(1))
+                .child(TextView::new("frequency"))
+                .child(
+                    SliderBuilder::default()
+                        .min_value(MIN_PITCH)
+                        .max_value(MAX_PITCH)
+                        .scale(SliderScale::Logarithmic)
+                        .build(
+                            "Start frequency (Hz)",
+                            &parameters.frequency.start_frequency,
+                        ),
+                )
+                .child(
+                    SliderBuilder::default()
+                        .min_value(0.0)
+                        .max_value(MAX_PITCH)
+                        .scale(SliderScale::Logarithmic)
+                        .build("Min. frequency (Hz)", &parameters.frequency.min_frequency),
+                )
+                .child(
+                    SliderBuilder::default()
+                        .min_value(-600.0)
+                        .max_value(600.0)
+                        .build("Slide (8va/sec)", &parameters.frequency.slide),
+                )
+                .child(
+                    SliderBuilder::default()
+                        .min_value(8.88201e-2)
+                        .max_value(-8.88201e-2)
+                        .build("Delta slide (8va/sec^2)", &parameters.frequency.delta_slide),
                 ),
         );
     }
