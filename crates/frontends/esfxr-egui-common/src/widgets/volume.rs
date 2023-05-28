@@ -1,27 +1,21 @@
-use egui::{Ui, Widget};
+use egui::Ui;
 use esfxr_dsp::DspParameters;
 
-use super::utils::{build_logarithmic_slider, build_slider};
+use crate::app_chain::AppChain;
+
+use super::utils::build_slider;
 
 pub struct VolumeWidget {
-    parameters: DspParameters,
+    pub parameters: DspParameters,
 }
 
 impl VolumeWidget {
-    pub fn new(parameters: DspParameters) -> Self {
-        Self { parameters }
-    }
-}
-
-impl Widget for VolumeWidget {
-    fn ui(self, ui: &mut Ui) -> egui::Response {
+    pub fn render(self, ui: &mut Ui, chain: &mut AppChain) {
         ui.group(|ui| {
             ui.vertical(|ui| {
                 ui.heading("volume");
-                build_slider(ui, &self.parameters.volume, "Volume", 0.0..=1.0);
-                build_logarithmic_slider(ui, &self.parameters.pitch, "Pitch (Hz)", 20.0..=20000.0);
+                build_slider(ui, chain, &self.parameters.volume, "Volume", 0.0..=1.0);
             })
-        })
-        .response
+        });
     }
 }
